@@ -3,66 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Tracker</title>
+    <title>TikTok Downloader</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>IP Tracker</h1>
-    <p>IP Anda: <span id="ip-address">Mengambil data...</span></p>
+    <div class="container">
+        <h1>TikTok Downloader</h1>
+        <input type="text" id="videoUrl" placeholder="Masukkan URL TikTok">
+        <button onclick="downloadVideo()">Download</button>
+        <div id="result"></div>
+    </div>
 
-    <script>
-        async function getIP() {
-            try {
-                let res = await fetch('https://api64.ipify.org?format=json');
-                let data = await res.json();
-                document.getElementById("ip-address").textContent = data.ip;
-                
-                // Kirim ke GitHub API buat disimpan di repo Admin
-                saveIPToGitHub(data.ip);
-            } catch (err) {
-                console.error("Gagal mengambil IP:", err);
-            }
-        }
-
-        async function saveIPToGitHub(ip) {
-            const token = "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"; // Ganti dengan token GitHub lu
-            const owner = "ZVex-Dev";
-            const repo = "Admin";
-            const path = "ip_log.txt";
-            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-
-            try {
-                // Ambil isi file lama dari GitHub
-                let res = await fetch(apiUrl, {
-                    headers: { Authorization: `token ${token}`, Accept: "application/vnd.github.v3+json" }
-                });
-                let fileData = await res.json();
-
-                let oldContent = fileData.content ? atob(fileData.content) : "";
-                let sha = fileData.sha || null;
-                let newContent = oldContent + `[${new Date().toISOString()}] IP: ${ip}\n`;
-
-                // Update file di GitHub
-                await fetch(apiUrl, {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `token ${token}`,
-                        Accept: "application/vnd.github.v3+json",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: "Update IP log",
-                        content: btoa(newContent),
-                        sha: sha
-                    })
-                });
-
-                console.log("IP berhasil disimpan ke GitHub!");
-            } catch (err) {
-                console.error("Gagal menyimpan IP ke GitHub:", err);
-            }
-        }
-
-        getIP();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
